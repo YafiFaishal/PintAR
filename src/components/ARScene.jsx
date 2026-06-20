@@ -38,12 +38,15 @@ export default function ARScene({ targetSrc, onSceneReady, onStop }) {
 
         await mindarThree.start();
         
-        // FIX: Force MindAR to recalculate video dimensions on iOS Safari robustly
-        // Safari sometimes takes a moment to update the video metadata/viewport
+        // FIX: Force MindAR to recalculate video dimensions on iOS Safari
+        // We run this continuously every 1 second because the user might take a long time
+        // to click "Allow Camera", meaning the video might start much later.
         const resizeInterval = setInterval(() => {
           window.dispatchEvent(new Event('resize'));
-        }, 300);
-        setTimeout(() => clearInterval(resizeInterval), 3000);
+        }, 1000);
+        
+        // Store interval so we can clear it on unmount
+        mindarThree.resizeInterval = resizeInterval;
         
         renderer.setAnimationLoop(() => {
           renderer.render(scene, camera);
@@ -57,6 +60,7 @@ export default function ARScene({ targetSrc, onSceneReady, onStop }) {
 
     return () => {
       if (mindarThree) {
+        if (mindarThree.resizeInterval) clearInterval(mindarThree.resizeInterval);
         mindarThree.stop();
         if (mindarThree.renderer) {
           mindarThree.renderer.setAnimationLoop(null);
