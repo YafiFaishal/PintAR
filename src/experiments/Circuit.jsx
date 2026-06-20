@@ -17,6 +17,7 @@ export default function Circuit() {
   const r1Ref = useRef(r1);
   const r2Ref = useRef(r2);
   const typeRef = useRef(circuitType);
+  const shakeIntensityRef = useRef(0); // 0 to 1 for shake boost
 
   useEffect(() => {
     vRef.current = voltage;
@@ -24,6 +25,70 @@ export default function Circuit() {
     r2Ref.current = r2;
     typeRef.current = circuitType;
   }, [voltage, r1, r2, circuitType]);
+
+  // Shake Detection Logic
+  useEffect(() => {
+    if (mode !== 'ar') return;
+
+    let lastX = null, lastY = null, lastZ = null;
+    let lastUpdate = 0;
+    const SHAKE_THRESHOLD = 800; // adjust sensitivity
+
+    const handleMotion = (event) => {
+      const current = event.accelerationIncludingGravity;
+      if (!current) return;
+      const currentTime = new Date().getTime();
+      
+      if ((currentTime - lastUpdate) > 100) {
+        const diffTime = (currentTime - lastUpdate);
+        lastUpdate = currentTime;
+        
+        const x = current.x;
+        const y = current.y;
+        const z = current.z;
+        
+        if (lastX !== null) {
+          const speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000;
+          if (speed > SHAKE_THRESHOLD) {
+            shakeIntensityRef.current = 1.0; // Max brightness
+          }
+        }
+        lastX = x;
+        lastY = y;
+        lastZ = z;
+      }
+    };
+
+    const requestPermission = async () => {
+      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        try {
+          const permission = await DeviceMotionEvent.requestPermission();
+          if (permission === 'granted') {
+            window.addEventListener('devicemotion', handleMotion);
+          }
+        } catch (e) {
+          console.warn('DeviceMotion permission error:', e);
+          window.addEventListener('devicemotion', handleMotion);
+        }
+      } else {
+        window.addEventListener('devicemotion', handleMotion);
+      }
+    };
+    
+    requestPermission();
+
+    // Decay shake intensity smoothly
+    const interval = setInterval(() => {
+      if (shakeIntensityRef.current > 0) {
+        shakeIntensityRef.current = Math.max(0, shakeIntensityRef.current - 0.05);
+      }
+    }, 50);
+
+    return () => {
+      window.removeEventListener('devicemotion', handleMotion);
+      clearInterval(interval);
+    };
+  }, [mode]);
 
   const calcPhysics = (v, r1, r2, type) => {
     let req = type === 'seri' ? r1 + r2 : (r1 * r2) / (r1 + r2);
@@ -200,8 +265,17 @@ export default function Circuit() {
       const type = typeRef.current;
       const { i } = calcPhysics(v, r1, r2, type);
 
-      // Glow opacity depends on current (I). I max usually ~24A
-      glowMat.opacity = Math.min(i / 10, 0.8);
+      // Glow opacity depends on current (I) AND shake intensity
+      const baseOpacity = Math.min(i / 10, 0.5);
+      const shakeBoost = shakeIntensityRef.current * 0.5; // Up to +0.5 from shaking
+      glowMat.opacity = Math.min(baseOpacity + shakeBoost, 1.0);
+      
+      // If shaking, make color brighter/whiter
+      if (shakeIntensityRef.current > 0.1) {
+        glowMat.color.setHex(0xffffff); // Flash white
+      } else {
+        glowMat.color.setHex(0xffaa00); // Normal orange/yellow
+      }
     };
   }, []);
 
