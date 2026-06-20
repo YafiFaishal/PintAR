@@ -98,9 +98,15 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="#experiments" className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-full shadow-glow-lg hover:-translate-y-1 transition-all duration-300">
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('experiments')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-full shadow-glow-lg hover:-translate-y-1 transition-all duration-300"
+              >
                 🧪 Mulai Praktikum
-              </a>
+              </button>
               <a href={import.meta.env.BASE_URL + "marker.png"} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-4 bg-slate-800/80 hover:bg-slate-700/80 backdrop-blur-md border border-slate-600 text-slate-200 font-bold rounded-full shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
                 Cetak Marker AR
