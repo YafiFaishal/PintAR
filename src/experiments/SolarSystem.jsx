@@ -128,8 +128,6 @@ export default function SolarSystem() {
     group.add(ambient);
 
     group.position.set(0, 0, 0);
-    // Compensate for the marker image being rotated 90 degrees clockwise
-    group.rotation.z = Math.PI / 2;
     anchor.group.add(group);
 
     const clock = new THREE.Clock();
