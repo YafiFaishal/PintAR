@@ -12,7 +12,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'targets/**/*.mind', 'models/**/*.glb'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'targets/**/*.mind', 'models/**/*.glb', 'marker.png'],
       manifest: {
         name: 'PintAR v2 - Lab Sains Virtual',
         short_name: 'PintAR',
@@ -35,7 +35,8 @@ export default defineConfig({
         ]
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 5000000 // 5MB
+        maximumFileSizeToCacheInBytes: 5000000, // 5MB
+        navigateFallbackDenylist: [/^\/.*\.(png|jpg|jpeg|svg|mind|glb|gltf)$/]
       }
     })
   ],
