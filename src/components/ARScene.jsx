@@ -13,7 +13,7 @@ export default function ARScene({ targetSrc, onSceneReady, onStop }) {
       try {
         mindarThree = new MindARThree({
           container: containerRef.current,
-          imageTargetSrc: targetSrc + '?v=3',
+          imageTargetSrc: targetSrc,
           uiScanning: 'yes',
           uiLoading: 'yes',
           facingMode: facingMode
