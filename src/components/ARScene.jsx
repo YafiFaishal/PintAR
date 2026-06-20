@@ -38,6 +38,11 @@ export default function ARScene({ targetSrc, onSceneReady, onStop }) {
 
         await mindarThree.start();
         
+        // FIX: Force MindAR to recalculate video dimensions on iOS Safari
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 500);
+        
         renderer.setAnimationLoop(() => {
           renderer.render(scene, camera);
         });
