@@ -38,10 +38,12 @@ export default function ARScene({ targetSrc, onSceneReady, onStop }) {
 
         await mindarThree.start();
         
-        // FIX: Force MindAR to recalculate video dimensions on iOS Safari
-        setTimeout(() => {
+        // FIX: Force MindAR to recalculate video dimensions on iOS Safari robustly
+        // Safari sometimes takes a moment to update the video metadata/viewport
+        const resizeInterval = setInterval(() => {
           window.dispatchEvent(new Event('resize'));
-        }, 500);
+        }, 300);
+        setTimeout(() => clearInterval(resizeInterval), 3000);
         
         renderer.setAnimationLoop(() => {
           renderer.render(scene, camera);
@@ -89,7 +91,10 @@ export default function ARScene({ targetSrc, onSceneReady, onStop }) {
 
   return (
     <>
-      <div ref={containerRef} className="fixed inset-0 w-screen h-screen z-40 bg-black" />
+      <div 
+        ref={containerRef} 
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh', zIndex: 40, backgroundColor: 'black', overflow: 'hidden' }} 
+      />
       
       {/* Modern AR HUD / UI Overlay */}
       <div className="fixed inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 sm:p-6 pb-8">
