@@ -143,7 +143,7 @@ export default function Home() {
         </div>
 
         {/* Experiment Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div id="experiments" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 scroll-mt-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl font-display text-slate-800 dark:text-white">
               Pilih Eksperimen
