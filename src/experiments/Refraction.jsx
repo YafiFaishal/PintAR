@@ -298,7 +298,7 @@ export default function Refraction() {
             document.getElementById('ar-hud-bottom')
           )}
           <ARScene 
-            targetSrc="/targets.mind"
+            targetSrc={import.meta.env.BASE_URL + "targets.mind"}
             onSceneReady={handleARSceneReady}
             onStop={() => setMode('sim')}
           />
