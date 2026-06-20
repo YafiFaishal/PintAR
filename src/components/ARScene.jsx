@@ -76,6 +76,11 @@ export default function ARScene({ targetSrc, onSceneReady, onStop }) {
       // Cleanup MindAR UI overlays that are injected into document.body
       const overlays = document.querySelectorAll('.mindar-ui-overlay');
       overlays.forEach(el => el.remove());
+      
+      // Wipe the container to remove leftover canvases
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
     };
   }, [targetSrc, onSceneReady, facingMode]); // Re-run when facingMode changes
 
